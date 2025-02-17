@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Detection History</h1>
+    <table id="example" class="display responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th>Vichle Image</th>
+                <th>Class</th>
+                <th>Number Plate</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Helmet</th>
+                <th>Seatbelt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detection in detectionRecords %}
+            <tr>
+                <td>
+                    <img src="{{ detection.vehicle_image.url }}" style="width: 200px; height: auto;" alt="Vehicle Image">
+                </td>
+                <td>{{ detection.vehicle_class }}</td>
+                <td>{{ detection.plate_number }}</td>
+                <td>{{ detection.check_in_time }}</td>
+                <td>{{ detection.check_out_time }}</td>
+                <td>
+                    {% if detection.has_helmet %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+                <td>
+                    {% if detection.has_seatbelt %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                responsive: true,
+            });
+        });
+    </script>
+{% endblock %}
+

@@ -1,0 +1,101 @@
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.conf import settings
+from .models import detectionRecord,CameraConfig,DETECTION_CHOICES
+from .detection_utils import start_camera_detections,stop_all_camera_detections
+from django.shortcuts import render,get_object_or_404
+import threading
+import cv2
+from django.contrib.auth.decorators import login_required
+global_stop_signal = threading.Event()
+stop_signal=threading.Event()
+active_threads = []
+@login_required(login_url='login')
+def home(request):
+    cameras = CameraConfig.objects.all()
+    context = {
+        'cameras': cameras,
+    }
+    return render(request, 'index.html', context)
+
+def stop():
+    global global_stop_signal
+    print("Not Set : ",global_stop_signal)
+    global_stop_signal.set()
+    print("Set : ",global_stop_signal)
+def clear():
+    global global_stop_signal
+    global_stop_signal.clear()
+
+def stop_detection(request):
+    try:
+        success, message = stop_all_camera_detections()
+        return JsonResponse({"success": success, "message": message})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
+
+def start_detections_view(request):
+    try:
+        success, message = start_camera_detections(request)
+        return JsonResponse({"success": success, "message": message})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
+
+
+@login_required(login_url='login')
+def generate_camera_url(request):
+    if request.method == 'POST':
+        Username = request.POST.get("username")
+        Password = request.POST.get("password")
+        channelName = request.POST.get("channel_name")
+        checkOption = request.POST.get("check_option")
+            
+        camera_config = CameraConfig(
+            username=Username,
+            password=Password,
+            channel_name=channelName,
+            camera_type=int(checkOption)
+        )
+        
+        camera_config.save()
+        return redirect('home')
+    else:
+        return render(request, 'camera_form.html')
+@login_required(login_url='login')
+def Camera_list (request):
+    cameras = CameraConfig.objects.all()
+    context = {
+        'cameras': cameras,
+    }
+    return render(request, 'camera_list.html', context)
+@login_required(login_url='login')
+def camera_delete(request, id):
+    camera = CameraConfig.objects.get(id=id)
+    camera.delete()
+    return redirect('camera_list')
+@login_required(login_url='login')
+def camera_update(request, id):
+    camera = get_object_or_404(CameraConfig, id=id)  
+    
+    if request.method == 'POST':
+        camera.username = request.POST.get("username", camera.username)
+        camera.password = request.POST.get("password", camera.password)
+        camera.channel_name = request.POST.get("channel_name", camera.channel_name)
+
+        check_option = request.POST.get("check_option") 
+        valid_choices = dict(DETECTION_CHOICES).keys() 
+        if check_option in valid_choices:
+            camera.camera_type = check_option
+        
+        camera.save()
+        return redirect('camera_list')  
+
+    context = {'camera': camera}
+    return render(request, 'camera_update.html', context)
+@login_required(login_url='login')
+def detection_history(request):
+    detectionRecords = detectionRecord.objects.all()
+    context = {
+        'detectionRecords': detectionRecords,
+    }
+    return render(request, 'detection_history.html', context)

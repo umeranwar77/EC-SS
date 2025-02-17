@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Camera List</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Cam ID #</th>
+        <th>Camera URL</th>
+        <th>Detection Type </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for camera in cameras %}
+      <tr>
+        <td>{{camera.channel_name}}</td>
+        <td><a href="{{ camera.generated_url }}" target="_blank">{{ camera.generated_url }}</a></td>
+          <td>{{ camera.get_camera_type_display }}</td>
+          <td>
+          <button class="btn btn-warning btn-sm">
+            <a href="{% url 'camera_update' camera.id %}" style="color: white; text-decoration: none;">Update</a></button>
+          <button class="btn btn-danger btn-sm">
+            <a href="{% url 'camera_delete' camera.id %}" style="color: white; text-decoration: none;">Delete</a>
+        </button>
+        
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

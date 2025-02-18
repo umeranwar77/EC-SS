@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center bg-primary text-white">
+            <h4>Update Camera URL</h4>
+        </div>
+            <form method="post" class="needs-validation" novalidate autocomplete="off">
+                {% csrf_token %}
+                
+                <!-- Username Input -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" id="username" value="{{ camera.username }}" 
+                           class="form-control" placeholder="Enter camera username" required>
+                    <div class="invalid-feedback">
+                        Please provide a username.
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" id="password" value="{{ camera.password }}" 
+                           class="form-control" placeholder="Enter camera password" required>
+                    <div class="invalid-feedback">
+                        Please provide a password.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="generated_url" class="form-label">Generated_url</label>
+                    <input type="generated_url" name="password" id="password" value="{{ camera.generated_url }}" 
+                           class="form-control" placeholder="Enter camera password" required>
+                    <div class="invalid-feedback">
+                        Please provide a password.
+                    </div>
+                </div>
+                <!-- Channel Name Input -->
+                <div class="mb-3">
+                    <label for="channel_name" class="form-label">Channel Name</label>
+                    <input type="text" name="channel_name" id="channel_name" value="{{ camera.channel_name }}" 
+                           class="form-control" placeholder="Enter channel name (e.g., 1, 2, 3)" required>
+                    <div class="invalid-feedback">
+                        Please provide a channel name.
+                    </div>
+                </div>
+
+                <!-- Camera Action Selection -->
+                <div class="mb-3">
+                    <label class="form-label">Action:</label>
+                    <ul class="list-unstyled">
+                        <li>
+                            <label>
+                                <input type="radio" name="check_option" value="0" 
+                                       {% if camera.camera_type == "0" %}checked{% endif %}>
+                                Check-out
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="check_option" value="1" 
+                                       {% if camera.camera_type == "1" %}checked{% endif %}>
+                                Check-in
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Update Camera URL</button>
+                </div>
+            </form>
+    </div>
+</div>
+{% endblock %}
